@@ -52,6 +52,7 @@ The aim of this project is to build a fully deployable NLP classification system
 
 ## Repository Structure (current)
 
+```
 NLP-AGNEWS-PIPELINE/
 │
 ├─ data/
@@ -65,3 +66,4 @@ NLP-AGNEWS-PIPELINE/
 ├─ requirements.txt
 ├─ step1_load_agnews.py
 └─ step2_split_and_save.py
+```
