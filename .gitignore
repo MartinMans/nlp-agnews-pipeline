@@ -1,2 +1,12 @@
+# Virtual environment
 venv/
-data/
+
+# Python cache
+__pycache__/
+
+# Model artifacts
+data/models/
+data/results/
+
+# Data files
+data/processed/

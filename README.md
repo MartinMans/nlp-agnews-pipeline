@@ -4,7 +4,7 @@ This project implements a complete, end-to-end NLP pipeline for classifying news
 
 ## Dataset Description
 
-The AG News dataset contains short news articles labeled into four classes:
+The AG News dataset contains short news articles labeled into four categories:
 
 | Label ID | Category |
 |----------|----------|
@@ -22,48 +22,81 @@ Dataset sources:
 ## Project Goal
 
 The aim of this project is to build a fully deployable NLP classification system, including:
-- Clean data handling (loading, splitting, preprocessing)
+- Clean data handling and preprocessing
 - Baseline machine-learning model (TF-IDF + Logistic Regression)
 - Improved transformer-based models (e.g., DistilBERT)
 - A unified inference interface
 - A FastAPI web service for prediction
-- Additional containerization and frontend UI
+- Additional containerization and a Streamlit frontend
 
 ## Progress So Far
 
 ### Step 1 — Load and Inspect Dataset
-- Created a script to load AG News from HuggingFace
-- Printed sample rows, column names, and label distribution
-- Confirmed dataset integrity and class balance
+- Loaded AG News from HuggingFace
+- Displayed sample rows, class distribution, and dataset structure
+- Confirmed dataset integrity and balance
 
 ### Step 2 — Create Train/Validation/Test Splits
-- Splits:
-  - Train: 108,000 samples
-  - Validation: 12,000 samples
-  - Test: 7,600 samples
-- Used train_test_split with stratification to preserve label balance
-- Saved splits as CSV files under data/processed/
+- Created splits:
+  - Train: 108,000 samples  
+  - Validation: 12,000 samples  
+  - Test: 7,600 samples  
+- Used stratified splitting to preserve class balance  
+- Saved all splits as CSV files under `data/processed/`
 
-## Next Steps
+### Step 3 — Baseline Model (TF-IDF + Logistic Regression)
+- Implemented a baseline text classifier using:
+  - `TfidfVectorizer` with unigrams + bigrams
+  - Multinomial Logistic Regression
+- Achieved ~92% validation accuracy
+- Saved the trained pipeline under `data/models/`
+- Saved evaluation metrics under `data/results/`
 
-- Implement baseline model: TF-IDF + Logistic Regression
-- Train, evaluate, and save the model as a Scikit-Learn pipeline
-- Begin setting up the inference layer and API
+### Step 4 — Inference Layer
+- Added a reusable inference module at `src/inference/baseline.py`
+- Supports:
+  - `predict(text)` for single inputs  
+  - `predict_batch(list_of_texts)` for batch inference  
+- Includes a small test script in `scripts/` that loads the model and runs predictions
 
-## Repository Structure (current)
+## Repository Structure
 
 ```
 NLP-AGNEWS-PIPELINE/
 │
-├─ data/
-│  └─ processed/
-│     ├─ ag_news_train.csv
-│     ├─ ag_news_val.csv
-│     └─ ag_news_test.csv
+├─ app/ # FastAPI (to be implemented)
 │
-├─ venv/
+├─ scripts/ # One-off training/data scripts
+│ ├─ load_agnews.py
+│ ├─ split_data.py
+│ ├─ train_baseline.py
+│ └─ test_baseline_inference.py
+│
+├─ src/ # Reusable project code
+│ ├─ config.py
+│ ├─ inference/
+│ │ └─ baseline.py
+│ └─ models/
+│   └─ baseline.py
+│
+├─ data/
+│ ├─ processed/
+│ │ ├─ ag_news_train.csv
+│ │ ├─ ag_news_val.csv
+│ │ └─ ag_news_test.csv
+│ ├─ models/
+│ │ └─ baseline_tfidf_logreg.joblib
+│ └─ results/
+│   └─ baseline_tfidf_logreg.txt
+│
+├─ .gitignore
 ├─ README.md
 ├─ requirements.txt
-├─ step1_load_agnews.py
-└─ step2_split_and_save.py
+└─ venv/
 ```
+
+## Next Steps
+
+- Implement the FastAPI prediction service
+- Build a simple Streamlit frontend that communicates with the API
+- Add a transformer-based model and compare performance
