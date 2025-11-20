@@ -1,3 +1,8 @@
+"""
+Fine-tune a transformer model on the AG News dataset, evaluate it,
+and save the trained model, tokenizer, and evaluation metrics.
+"""
+
 import numpy as np
 import pandas as pd
 from datasets import Dataset
@@ -19,7 +24,7 @@ from src.models.transformer import (
 
 def load_splits_as_datasets():
     """
-    Load the train and validation splits from CSV into HuggingFace Datasets.
+    Load the train and validation splits from CSV as HuggingFace Datasets.
     Expects columns: 'text' and 'label'.
     """
     train_path = PROCESSED_DIR / "ag_news_train.csv"
@@ -35,9 +40,7 @@ def load_splits_as_datasets():
 
 
 def compute_metrics(eval_pred):
-    """
-    Compute accuracy and macro F1 for evaluation.
-    """
+    """Compute accuracy and macro F1 for evaluation."""
     logits, labels = eval_pred
     preds = np.argmax(logits, axis=-1)
 
@@ -51,17 +54,18 @@ def compute_metrics(eval_pred):
 
 
 def main():
+    """Fine-tune the transformer model, evaluate it, and save artifacts."""
     # Make everything as reproducible as possible
     set_seed(RANDOM_STATE)
 
-    # 1. Load base model + tokenizer
+    # Load base model and tokenizer
     tokenizer = load_tokenizer()
     model = load_model(num_labels=4)
 
-    # 2. Load splits as Datasets
+    # Load train and validation splits as Datasets
     train_ds, val_ds = load_splits_as_datasets()
 
-    # 3. Tokenize datasets
+    # Tokenize datasets
     tokenize_fn = build_tokenize_fn(tokenizer, max_length=128)
     train_ds = train_ds.map(tokenize_fn, batched=True)
     val_ds = val_ds.map(tokenize_fn, batched=True)
@@ -70,7 +74,7 @@ def main():
     if "label" not in train_ds.column_names:
         raise ValueError("Expected 'label' column in dataset.")
 
-    # Keep only the columns we actually need
+    # Keep only the columns needed for training and debugging
     keep_cols = ["input_ids", "attention_mask", "label", "text"]
     train_ds = train_ds.remove_columns(
         [c for c in train_ds.column_names if c not in keep_cols]
@@ -79,11 +83,11 @@ def main():
         [c for c in val_ds.column_names if c not in keep_cols]
     )
 
-    # Format for PyTorch
+    # Format datasets for PyTorch
     train_ds.set_format(type="torch", columns=["input_ids", "attention_mask", "label"])
     val_ds.set_format(type="torch", columns=["input_ids", "attention_mask", "label"])
 
-    # 4. Training arguments  (requires transformers >= 3.x / 4.x)
+    # Define training arguments
     training_args = TrainingArguments(
         output_dir=str(TRANSFORMER_OUTPUT_DIR),
         eval_strategy="epoch",
@@ -101,7 +105,7 @@ def main():
         report_to="none",  # avoid extra integration noise
     )
 
-    # 5. Trainer
+    # Configure Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -111,14 +115,14 @@ def main():
         compute_metrics=compute_metrics,
     )
 
-    # 6. Train
+    # Run training
     trainer.train()
 
-    # 7. Final evaluation
+    # Final evaluation on validation set
     eval_results = trainer.evaluate()
     print("Final evaluation:", eval_results)
 
-    # 8. Save model + tokenizer
+    # Save model and tokenizer
     TRANSFORMER_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     trainer.save_model(str(TRANSFORMER_OUTPUT_DIR))
     tokenizer.save_pretrained(str(TRANSFORMER_OUTPUT_DIR))

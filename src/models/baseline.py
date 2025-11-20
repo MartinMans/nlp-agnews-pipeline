@@ -1,3 +1,8 @@
+"""
+Build the TF-IDF + Logistic Regression pipeline used as the baseline
+classifier for the AG News dataset.
+"""
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -7,8 +12,7 @@ from src.config import RANDOM_STATE
 
 def build_baseline_pipeline() -> Pipeline:
     """
-    Construct the TF-IDF + Logistic Regression pipeline used
-    for the AG News baseline classifier.
+    Construct the TF-IDF + Logistic Regression pipeline for baseline classification.
     """
     pipeline = Pipeline(
         steps=[

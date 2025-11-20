@@ -115,11 +115,11 @@ NLP-AGNEWS-PIPELINE/
 │  └─ streamlit_app.py
 │
 ├─ scripts/                  # One-off training/data scripts
-│  ├─ 1_load_agnews.py
-│  ├─ 2_split_and_save.py
-│  ├─ 3_train_baseline.py
-│  ├─ 4_test_baseline_inference.py
-│  └─ 7_train_transformer.py
+│  ├─ load_agnews.py
+│  ├─ split_and_save.py
+│  ├─ train_baseline.py
+│  ├─ test_baseline_inference.py
+│  └─ train_transformer.py
 │
 ├─ src/                      # Reusable project code
 │  ├─ __init__.py

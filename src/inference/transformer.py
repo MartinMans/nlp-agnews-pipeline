@@ -1,3 +1,8 @@
+"""
+Inference utilities for the fine-tuned transformer model.
+Provides single-text and batch prediction helpers.
+"""
+
 from typing import List, Dict, Any
 
 import numpy as np
@@ -12,7 +17,7 @@ _device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def _load_model_and_tokenizer():
-    """Lazy-load the fine-tuned transformer model + tokenizer (cached)."""
+    """Lazy-load the fine-tuned transformer model and tokenizer (cached)."""
     global _model, _tokenizer
 
     if _model is None or _tokenizer is None:

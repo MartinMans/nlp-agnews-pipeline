@@ -1,3 +1,8 @@
+"""
+Utilities for loading the base transformer model and tokenizer,
+and for building the tokenization function used during training.
+"""
+
 from typing import Dict, Any
 
 from transformers import (
@@ -9,9 +14,7 @@ from src.config import ID2LABEL, LABEL2ID, TRANSFORMER_MODEL_NAME
 
 
 def load_tokenizer():
-    """
-    Load the tokenizer for the base transformer model.
-    """
+    """Load the tokenizer for the base transformer model."""
     tokenizer = AutoTokenizer.from_pretrained(TRANSFORMER_MODEL_NAME)
     return tokenizer
 
@@ -32,8 +35,8 @@ def load_model(num_labels: int = 4):
 
 def build_tokenize_fn(tokenizer, max_length: int = 128):
     """
-    Return a function suitable for Dataset.map that tokenizes
-    a batch of examples with a 'text' field.
+    Build a tokenization function for Dataset.map that tokenizes
+    batches containing a 'text' field.
     """
 
     def tokenize_batch(batch: Dict[str, Any]) -> Dict[str, Any]:

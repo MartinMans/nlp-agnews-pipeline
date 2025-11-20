@@ -1,7 +1,14 @@
+"""
+Utility script for inspecting the AG News dataset structure, columns,
+sample rows, and label distribution.
+"""
+
 from datasets import load_dataset
 import pandas as pd
 
+
 def main():
+    """Load the AG News dataset and print basic statistics and samples."""
     ds = load_dataset("ag_news")
 
     train_df = ds["train"].to_pandas()
@@ -16,6 +23,7 @@ def main():
 
     print("\nLabel distribution:")
     print(train_df["label"].value_counts())
+
 
 if __name__ == "__main__":
     main()

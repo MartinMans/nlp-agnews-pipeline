@@ -1,3 +1,8 @@
+"""
+Streamlit frontend for the AG News classifier, calling the FastAPI backend
+and visualizing class probabilities for each input text.
+"""
+
 import requests
 import streamlit as st
 import pandas as pd
@@ -16,6 +21,7 @@ def call_api(texts, api_base_url: str, endpoint: str):
 
 
 def main():
+    """Render the Streamlit UI and handle user interaction for classification."""
     st.title("AG News Topic Classifier")
     st.caption("NOTE: Use the sidebar to swap models")
 
@@ -70,6 +76,7 @@ def main():
             predictions = data["predictions"]
             labels = ["World", "Sports", "Business", "Sci/Tech"]
 
+            # Fixed color mapping to keep label colors consistent across charts
             color_map = {
                 "World": "#2ca02c",
                 "Sports": "#ff7f0e",

@@ -1,3 +1,8 @@
+"""
+Central configuration for paths, label mappings, and model settings
+used across the AG News project.
+"""
+
 from pathlib import Path
 
 # Random seed used across scripts

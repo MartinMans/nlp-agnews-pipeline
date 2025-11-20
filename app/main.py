@@ -1,3 +1,8 @@
+"""
+FastAPI application exposing endpoints for AG News classification
+using both a baseline model and a transformer model.
+"""
+
 # app/main.py
 from typing import List
 
@@ -17,11 +22,15 @@ app = FastAPI(
 
 @app.get("/health")
 def health():
+    """Simple health check endpoint."""
     return {"status": "ok"}
 
 
 @app.post("/predict", response_model=PredictResponse)
 def predict(request: PredictRequest) -> PredictResponse:
+    """
+    Run prediction using the baseline TF-IDF + Logistic Regression model.
+    """
     results = predict_batch_baseline(request.texts)
 
     predictions: List[Prediction] = [
@@ -40,7 +49,7 @@ def predict(request: PredictRequest) -> PredictResponse:
 @app.post("/predict-transformer", response_model=PredictResponse)
 def predict_transformer(request: PredictRequest) -> PredictResponse:
     """
-    Predict using the fine-tuned transformer model.
+    Run prediction using the fine-tuned transformer model.
     """
     results = predict_batch_transformer(request.texts)
 

@@ -1,3 +1,8 @@
+"""
+Train and evaluate the baseline TF-IDF + Logistic Regression model
+on the AG News dataset, then save the model and validation results.
+"""
+
 from pathlib import Path
 
 import joblib
@@ -9,6 +14,7 @@ from src.models.baseline import build_baseline_pipeline
 
 
 def load_splits():
+    """Load preprocessed train and validation splits from disk."""
     train_path = PROCESSED_DIR / "ag_news_train.csv"
     val_path = PROCESSED_DIR / "ag_news_val.csv"
 
@@ -19,7 +25,8 @@ def load_splits():
 
 
 def main():
-    # -------- 1. Load data --------
+    """Train the baseline model, evaluate it, and save outputs."""
+    # Load training and validation data
     train_df, val_df = load_splits()
 
     X_train = train_df["text"].astype(str).tolist()
@@ -30,13 +37,13 @@ def main():
 
     print(f"Train size: {len(X_train)}, Val size: {len(X_val)}")
 
-    # -------- 2. Build and train model --------
+    # Build and train the baseline model
     model = build_baseline_pipeline()
     print("Training baseline TF-IDF + Logistic Regression model...")
     model.fit(X_train, y_train)
     print("Training complete.")
 
-    # -------- 3. Evaluate on validation set --------
+    # Evaluate on validation set
     print("Evaluating on validation set...")
     y_pred = model.predict(X_val)
 
@@ -54,7 +61,7 @@ def main():
     print(metrics_text)
     print("=" * 60 + "\n")
 
-    # -------- 4. Save model and metrics --------
+    # Save trained model and evaluation metrics
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 

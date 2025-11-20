@@ -1,3 +1,7 @@
+"""
+Pydantic schemas for request and response models used by the prediction API.
+"""
+
 # app/schemas.py
 from typing import List
 from pydantic import BaseModel
