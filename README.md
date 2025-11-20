@@ -30,14 +30,14 @@ The aim of this project is to build a fully deployable NLP classification system
 - A Streamlit frontend for interactive use  
 - Optional containerization for deployment  
 
-## Progress So Far
+## Process Overview
 
-### Step 1 — Load and Inspect Dataset
+### 1. Load and Inspect Dataset
 - Loaded AG News from HuggingFace  
 - Displayed sample rows, class distribution, and dataset structure  
 - Confirmed dataset integrity and balance  
 
-### Step 2 — Create Train/Validation/Test Splits
+### 2. Create Train/Validation/Test Splits
 - Created splits:  
   - Train: 108,000 samples  
   - Validation: 12,000 samples  
@@ -45,7 +45,7 @@ The aim of this project is to build a fully deployable NLP classification system
 - Used stratified splitting to preserve class balance  
 - Saved all splits as CSV files under `data/processed/`  
 
-### Step 3 — Baseline Model (TF-IDF + Logistic Regression)
+### 3. Baseline Model (TF-IDF + Logistic Regression)
 - Implemented a baseline text classifier using:  
   - `TfidfVectorizer` (unigrams + bigrams)  
   - Multinomial Logistic Regression  
@@ -53,34 +53,34 @@ The aim of this project is to build a fully deployable NLP classification system
 - Saved the trained model under `data/models/`  
 - Saved evaluation metrics under `data/results/`  
 
-### Step 4 — Inference Layer (Baseline)
+### 4. Inference Layer (Baseline)
 - Added a reusable inference module at `src/inference/baseline.py`  
 - Provides:  
   - `predict(text)` for single inputs  
   - `predict_batch(list_of_texts)` for batch inference  
 - Includes a test script in `scripts/` to verify predictions  
 
-### Step 5 — FastAPI Backend
+### 5. FastAPI Backend
 - Implemented a FastAPI application with two endpoints:  
   - `/health` — service status  
   - `/predict` — baseline batch predictions  
 - Integrated backend with the baseline inference module  
 - API documentation available through Swagger (`/docs`)  
 
-### Step 6 — Streamlit Frontend
+### 6. Streamlit Frontend
 - Built a fully functional Streamlit UI for interacting with the model  
 - Supports single and multi-line classification (one text per line)  
 - Displays predicted labels and probability distributions using Altair  
 - Communicates with the FastAPI backend via HTTP requests  
 
-### Step 7 — Transformer Fine-Tuning (DistilBERT)
+### 7. Transformer Fine-Tuning (DistilBERT)
 - Fine-tuned `distilbert-base-uncased` on AG News  
 - Achieved ~94.6% validation accuracy and macro F1  
 - Saved the model, tokenizer, and checkpoints under  
   `data/models/transformer_distilbert/`  
-- Stored evaluation results in `eval_results.txt`
+- Stored evaluation results in `transformer_eval_results.txt`
 
-### Step 8 — Transformer Inference
+### 8. Transformer Inference
 - Added inference module at `src/inference/transformer.py`  
 - Provides:  
   - `predict(text)`  
@@ -88,18 +88,93 @@ The aim of this project is to build a fully deployable NLP classification system
 - Loads fine-tuned DistilBERT with `AutoModelForSequenceClassification`  
 - Mirrors the baseline inference interface  
 
-### Step 9 — FastAPI Transformer Endpoint
+### 9. FastAPI Transformer Endpoint
 - Added a second prediction endpoint:  
   - `/predict-transformer`  
 - Returns identical JSON structure as baseline inference  
 - Allows the frontend to switch models seamlessly  
 
-### Step 10 — Streamlit Model Selector
+### 10. Streamlit Model Selector
 - Updated the Streamlit UI to support model selection:  
   - **Baseline (TF-IDF + Logistic Regression)**  
   - **Transformer (DistilBERT)**  
 - Same frontend, two different backends  
 - Makes it easy to compare performance and behavior  
+
+## How to Run This Project
+
+### 1. Install Requirements
+Create a virtual environment (recommended):
+
+```
+python -m venv venv
+source venv/bin/activate   # macOS / Linux
+venv\Scripts\activate      # Windows
+```
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+### 2. Generate Dataset Splits
+
+```
+python scripts/load_agnews.py
+python scripts/split_and_save.py
+```
+
+### 3. Train the Baseline Model
+
+```
+python scripts/train_baseline.py
+```
+
+### 4. (Optional) Test Baseline Inference
+
+```
+python scripts/test_baseline_inference.py
+```
+
+### 5. Fine-Tune the Transformer Model  
+(Requires a GPU or sufficient CPU time)
+
+```
+python scripts/train_transformer.py
+```
+
+This generates:
+
+```
+data/models/transformer_distilbert/
+```
+
+### 6. Start the FastAPI Backend
+
+```
+uvicorn app.main:app --reload
+```
+
+FastAPI will be available at:
+
+```
+http://127.0.0.1:8000
+http://127.0.0.1:8000/docs     # Swagger UI
+```
+
+### 7. Launch the Streamlit Frontend  
+In a second terminal:
+
+```
+streamlit run frontend/streamlit_app.py
+```
+
+Streamlit will be available at:
+
+```
+http://localhost:8501
+```
 
 ## Repository Structure
 
@@ -152,9 +227,6 @@ NLP-AGNEWS-PIPELINE/
 └─ venv/                     # (ignored) local virtual environment
 ```
 
-## Next Steps
+## Possible Future Improvements
 
-- Containerize the FastAPI and Streamlit applications using Docker  
-- Provide a lightweight deployment setup (Docker Compose or a single-run script)  
-- Maybe use a cloud provider? Not sure yet.
-
+- Containerizing the FastAPI and Streamlit applications using Docker
