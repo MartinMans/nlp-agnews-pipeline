@@ -53,7 +53,7 @@ The aim of this project is to build a fully deployable NLP classification system
 - Saved the trained model under `data/models/`  
 - Saved evaluation metrics under `data/results/`  
 
-### Step 4 — Inference Layer
+### Step 4 — Inference Layer (Baseline)
 - Added a reusable inference module at `src/inference/baseline.py`  
 - Provides:  
   - `predict(text)` for single inputs  
@@ -63,61 +63,98 @@ The aim of this project is to build a fully deployable NLP classification system
 ### Step 5 — FastAPI Backend
 - Implemented a FastAPI application with two endpoints:  
   - `/health` — service status  
-  - `/predict` — batch predictions for one or more texts  
+  - `/predict` — baseline batch predictions  
 - Integrated backend with the baseline inference module  
-- API automatically generates interactive documentation via Swagger (`/docs`)  
+- API documentation available through Swagger (`/docs`)  
 
 ### Step 6 — Streamlit Frontend
 - Built a fully functional Streamlit UI for interacting with the model  
 - Supports single and multi-line classification (one text per line)  
-- Displays predicted labels and probability distributions using Altair charts  
+- Displays predicted labels and probability distributions using Altair  
 - Communicates with the FastAPI backend via HTTP requests  
+
+### Step 7 — Transformer Fine-Tuning (DistilBERT)
+- Fine-tuned `distilbert-base-uncased` on AG News  
+- Achieved ~94.6% validation accuracy and macro F1  
+- Saved the model, tokenizer, and checkpoints under  
+  `data/models/transformer_distilbert/`  
+- Stored evaluation results in `eval_results.txt`
+
+### Step 8 — Transformer Inference
+- Added inference module at `src/inference/transformer.py`  
+- Provides:  
+  - `predict(text)`  
+  - `predict_batch(list_of_texts)`  
+- Loads fine-tuned DistilBERT with `AutoModelForSequenceClassification`  
+- Mirrors the baseline inference interface  
+
+### Step 9 — FastAPI Transformer Endpoint
+- Added a second prediction endpoint:  
+  - `/predict-transformer`  
+- Returns identical JSON structure as baseline inference  
+- Allows the frontend to switch models seamlessly  
+
+### Step 10 — Streamlit Model Selector
+- Updated the Streamlit UI to support model selection:  
+  - **Baseline (TF-IDF + Logistic Regression)**  
+  - **Transformer (DistilBERT)**  
+- Same frontend, two different backends  
+- Makes it easy to compare performance and behavior  
 
 ## Repository Structure
 
 ```
 NLP-AGNEWS-PIPELINE/
 │
-├─ app/ # FastAPI application
-│ ├─ init.py
-│ ├─ main.py
-│ └─ schemas.py
+├─ app/                      # FastAPI application
+│  ├─ __init__.py
+│  ├─ main.py
+│  └─ schemas.py
 │
-├─ frontend/ # Streamlit user interface
-│ └─ streamlit_app.py
+├─ frontend/                 # Streamlit user interface
+│  └─ streamlit_app.py
 │
-├─ scripts/ # One-off training/data scripts
-│ ├─ 1_load_agnews.py
-│ ├─ 2_split_data.py
-│ ├─ 3_train_baseline.py
-│ └─ 4_test_baseline_inference.py
+├─ scripts/                  # One-off training/data scripts
+│  ├─ 1_load_agnews.py
+│  ├─ 2_split_and_save.py
+│  ├─ 3_train_baseline.py
+│  ├─ 4_test_baseline_inference.py
+│  └─ 7_train_transformer.py
 │
-├─ src/ # Reusable project code
-│ ├─ config.py
-│ ├─ inference/
-│ │ └─ baseline.py
-│ └─ models/
-│   └─ baseline.py
+├─ src/                      # Reusable project code
+│  ├─ __init__.py
+│  ├─ config.py
+│  ├─ inference/
+│  │  ├─ __init__.py
+│  │  ├─ baseline.py
+│  │  └─ transformer.py
+│  └─ models/
+│     ├─ __init__.py
+│     ├─ baseline.py
+│     └─ transformer.py
 │
-├─ data/
-│ ├─ processed/
-│ │ ├─ ag_news_train.csv
-│ │ ├─ ag_news_val.csv
-│ │ └─ ag_news_test.csv
-│ ├─ models/
-│ │ └─ baseline_tfidf_logreg.joblib
-│ └─ results/
-│   └─ baseline_tfidf_logreg.txt
+├─ data/                     # (ignored by Git) local data and models
+│  ├─ processed/             # train/val/test CSV splits
+│  ├─ models/
+│  │  ├─ baseline_tfidf_logreg.joblib
+│  │  └─ transformer_distilbert/
+│  │     ├─ config.json
+│  │     ├─ model.safetensors
+│  │     ├─ tokenizer.json
+│  │     └─ ...              # checkpoints, training args, etc.
+│  └─ results/
+│     ├─ baseline_tfidf_logreg.txt
+│     └─ transformer_eval_results.txt
 │
 ├─ .gitignore
 ├─ README.md
 ├─ requirements.txt
-└─ venv/
+└─ venv/                     # (ignored) local virtual environment
 ```
 
 ## Next Steps
 
-- Fine-tune a transformer-based model (e.g., DistilBERT)  
-- Add a transformer inference module and new API endpoint  
-- Allow the Streamlit UI to select between baseline and transformer models  
-- Containerize FastAPI + Streamlit using Docker 
+- Containerize the FastAPI and Streamlit applications using Docker  
+- Provide a lightweight deployment setup (Docker Compose or a single-run script)  
+- Maybe use a cloud provider? Not sure yet.
+

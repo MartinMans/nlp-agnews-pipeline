@@ -18,3 +18,7 @@ ID2LABEL = {
 }
 
 LABEL2ID = {v: k for k, v in ID2LABEL.items()}
+
+# Transformer settings
+TRANSFORMER_MODEL_NAME = "distilbert-base-uncased"
+TRANSFORMER_OUTPUT_DIR = MODELS_DIR / "transformer_distilbert"
